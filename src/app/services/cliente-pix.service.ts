@@ -10,7 +10,7 @@ import { TransacaoResponse } from '../models/transacao-response';
   providedIn: 'root'
 })
 export class ClientePixService {
-  private apiUrl = `${environment.apiUrl}/clientepix`;
+  private apiUrl = `${environment.apiUrl}/ClientePix`;
 
   constructor(private http: HttpClient) { }
 

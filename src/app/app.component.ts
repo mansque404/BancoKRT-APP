@@ -53,12 +53,16 @@ export class AppComponent {
           this.toastr.success('Cliente encontrado com sucesso!', 'Sucesso');
         },
         error: (err) => {
-          if (err.status === 404) {
-            this.toastr.error('Cliente não encontrado. Verifique os dados e tente novamente.', 'Erro');
-          } else {
-            this.toastr.error('Ocorreu um erro inesperado ao se comunicar com a API.', 'Erro');
-          }
           this.isLoading = false;
+          if (err.status === 404) {
+            this.toastr.error('Cliente não encontrado. Verifique os dados e tente novamente.', 'Cliente não encontrado');
+          } else if (err.status === 204) {
+            this.toastr.info('Nenhum cliente encontrado com os dados informados.', 'Sem resultados');
+          } else if (err.status === 400) {
+            this.toastr.error('Dados de busca inválidos. Verifique o documento e ID da conta.', 'Dados inválidos');
+          } else {
+            this.toastr.error('Ocorreu um erro inesperado ao se comunicar com a API.', 'Erro de comunicação');
+          }
         }
       });
   }
@@ -75,15 +79,17 @@ export class AppComponent {
       .subscribe({
         next: (clienteCriado) => {
           this.isCreating = false;
-          this.toastr.success(`Cliente ${clienteCriado.documento} criado com sucesso!`, 'Sucesso');
+          this.toastr.success(`Cliente ${clienteCriado.documento} criado com sucesso!`, 'Cliente criado');
           this.novoCliente = { documento: '', contaId: '', limitePix: null, numeroAgencia: '', numeroConta: '' };
         },
         error: (err) => {
           this.isCreating = false;
           if (err.status === 409) {
-            this.toastr.error('Este cliente (documento/conta) já existe.', 'Erro');
+            this.toastr.error('Este cliente (documento/conta) já existe no sistema.', 'Cliente duplicado');
+          } else if (err.status === 400) {
+            this.toastr.error('Dados inválidos. Verifique as informações e tente novamente.', 'Dados inválidos');
           } else {
-            this.toastr.error('Ocorreu um erro ao criar o cliente.', 'Erro');
+            this.toastr.error('Ocorreu um erro ao criar o cliente. Tente novamente.', 'Erro no servidor');
           }
         }
       });
@@ -91,12 +97,12 @@ export class AppComponent {
 
   atualizarLimite(): void {
     if (!this.cliente) {
-      this.toastr.error("Nenhum cliente selecionado para atualizar.", "Erro");
+      this.toastr.error("Nenhum cliente selecionado para atualizar.", "Cliente não selecionado");
       return;
     }
 
     if (this.cliente.limitePix === null || this.cliente.limitePix < 0) {
-      this.toastr.error("O valor do limite não pode ser negativo.", "Erro de Validação");
+      this.toastr.error("O valor do limite não pode ser negativo.", "Valor inválido");
       return;
     }
 
@@ -106,14 +112,16 @@ export class AppComponent {
       .subscribe({
         next: () => {
           this.isUpdating = false;
-          this.toastr.success('Limite PIX atualizado com sucesso!', 'Sucesso');
+          this.toastr.success('Limite PIX atualizado com sucesso!', 'Limite atualizado');
         },
         error: (err) => {
           this.isUpdating = false;
           if (err.status === 404) {
-            this.toastr.error('Cliente não encontrado. Pode ter sido removido por outro usuário.', 'Erro');
+            this.toastr.error('Cliente não encontrado. Pode ter sido removido por outro usuário.', 'Cliente não encontrado');
+          } else if (err.status === 400) {
+            this.toastr.error('Dados inválidos para atualização do limite.', 'Dados inválidos');
           } else {
-            this.toastr.error('Ocorreu um erro ao atualizar o limite.', 'Erro');
+            this.toastr.error('Ocorreu um erro ao atualizar o limite.', 'Erro no servidor');
           }
         }
       });
@@ -138,14 +146,14 @@ export class AppComponent {
         next: () => {
           this.isDeleting = false;
           this.cliente = null;
-          this.toastr.success(`Cliente com documento ${clienteParaDeletar.documento} foi removido com sucesso.`, 'Sucesso');
+          this.toastr.success(`Cliente com documento ${clienteParaDeletar.documento} foi removido com sucesso.`, 'Cliente removido');
         },
         error: (err) => {
           this.isDeleting = false;
           if (err.status === 404) {
-            this.toastr.error('Cliente não encontrado. Pode ter sido removido por outro usuário.', 'Erro');
+            this.toastr.error('Cliente não encontrado. Pode ter sido removido por outro usuário.', 'Cliente não encontrado');
           } else {
-            this.toastr.error('Ocorreu um erro ao remover o cliente.', 'Erro');
+            this.toastr.error('Ocorreu um erro ao remover o cliente.', 'Erro no servidor');
           }
         }
       });
@@ -155,7 +163,7 @@ export class AppComponent {
     if (!this.cliente) return;
 
     if (!this.valorTransacao || this.valorTransacao <= 0) {
-      this.toastr.error('Por favor, insira um valor de transação válido e positivo.', 'Erro de Validação');
+      this.toastr.error('Por favor, insira um valor de transação válido e positivo.', 'Valor inválido');
       return;
     }
 
@@ -179,7 +187,13 @@ export class AppComponent {
         },
         error: (err) => {
           this.isProcessing = false;
-          this.toastr.error('Ocorreu um erro de comunicação com a API.', 'Erro');
+          if (err.status === 400) {
+            this.toastr.error('Dados da transação são inválidos. Verifique o valor informado.', 'Dados inválidos');
+          } else if (err.status === 404) {
+            this.toastr.error('Cliente não encontrado para processar a transação.', 'Cliente não encontrado');
+          } else {
+            this.toastr.error('Ocorreu um erro de comunicação com a API.', 'Erro de comunicação');
+          }
         }
       });
   }
