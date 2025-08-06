@@ -1,1 +1,69 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+@import 'ngx-toastr/toastr';
+
+:root {
+  --btg-dark-blue: #0A1926;
+  --btg-card-bg: #0E2031;
+  --btg-accent-blue: #00A7E1;
+  --btg-accent-hover: #00BFFF;
+  --btg-text-primary: #E6F1F5;
+  --btg-text-secondary: #8892B0;
+  --btg-border-color: #1A344C;
+  --btg-success: #28a745;
+  --btg-error: #dc3545;
+  --btg-shadow: 0 10px 30px -15px rgba(2, 12, 27, 0.7);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: var(--btg-dark-blue);
+  font-family: 'Roboto', sans-serif;
+  color: var(--btg-text-primary);
+  line-height: 1.6;
+}
+
+h1, h2, h3 {
+  font-weight: 700;
+  color: var(--btg-text-primary);
+  margin-bottom: 1rem;
+}
+
+/* Custom Toastr Styling */
+.toast-container {
+  margin-top: 20px;
+}
+
+.toast {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.toast-success {
+  background-color: #28a745 !important;
+  color: white !important;
+}
+
+.toast-error {
+  background-color: #dc3545 !important;
+  color: white !important;
+}
+
+.toast-warning {
+  background-color: #ffc107 !important;
+  color: #212529 !important;
+}
+
+.toast-info {
+  background-color: var(--btg-accent-blue) !important;
+  color: white !important;
+}
