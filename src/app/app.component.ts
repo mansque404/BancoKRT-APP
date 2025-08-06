@@ -48,16 +48,18 @@ export class AppComponent {
     this.clientePixService.getClienteByKey(this.documentoBusca, this.contaIdBusca)
       .subscribe({
         next: (data) => {
-          this.cliente = data;
           this.isLoading = false;
-          this.toastr.success('Cliente encontrado com sucesso!', 'Sucesso');
+          if (data) {
+            this.cliente = data;
+            this.toastr.success('Cliente encontrado com sucesso!', 'Sucesso');
+          } else {
+            this.toastr.info('Nenhum cliente encontrado com os dados informados.', 'Sem resultados');
+          }
         },
         error: (err) => {
           this.isLoading = false;
           if (err.status === 404) {
             this.toastr.error('Cliente não encontrado. Verifique os dados e tente novamente.', 'Cliente não encontrado');
-          } else if (err.status === 204) {
-            this.toastr.info('Nenhum cliente encontrado com os dados informados.', 'Sem resultados');
           } else if (err.status === 400) {
             this.toastr.error('Dados de busca inválidos. Verifique o documento e ID da conta.', 'Dados inválidos');
           } else {
